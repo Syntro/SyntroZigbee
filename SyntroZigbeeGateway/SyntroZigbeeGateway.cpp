@@ -70,11 +70,13 @@ void SyntroZigbeeGateway::refreshDisplay()
 {
 	QList<ZigbeeStats> list = m_controller->stats();
 
-	if (list.count() == 0)
-		return;
-
-	// don't count the header row
 	int tableRowCount = ui.m_table->rowCount();
+
+    // remove extra rows from radios we lose
+    while (tableRowCount > list.count()) {
+        tableRowCount--;
+        ui.m_table->removeRow(tableRowCount);
+    }
 
 	int row = 0;
 
