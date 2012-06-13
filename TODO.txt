@@ -1,0 +1,14 @@
+TODO: SyntroZigbee
+
+1. Add nodeID config dialog to gateway GUI
+
+2. Implement polling mode in gateway
+
+3. Add mode where each radio gets its own Syntro streams
+
+4. More documentation
+
+5. More demos
+
+6. More radio stats over multicast (firmware, mfg, model, etc...)
+

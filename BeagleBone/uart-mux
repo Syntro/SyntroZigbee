@@ -1,0 +1,86 @@
+#! /bin/sh
+### BEGIN INIT INFO
+# Provides:          uart-mux
+# Required-Start:
+# Required-Stop:
+# Default-Start:
+# Default-Stop:      
+# Short-Description: Muxes some uart pins for uart use
+# Description:
+### END INIT INFO
+
+# Comment out or assign a value other then "yes" to the
+# MUX_UARTx lines for the UARTs you don't want to configure. 
+
+# UART1 P9 pins 24(TX), 26(RX)
+MUX_UART1=yes
+UART1_TXD=/sys/kernel/debug/omap_mux/uart1_txd
+UART1_TX_MUX=0
+UART1_RXD=/sys/kernel/debug/omap_mux/uart1_rxd
+UART1_RX_MUX=20
+
+# UART2 P9 pins 21(TX), 22(RX)
+MUX_UART2=yes
+UART2_TXD=/sys/kernel/debug/omap_mux/spi0_d0
+UART2_TX_MUX=1
+UART2_RXD=/sys/kernel/debug/omap_mux/spi0_sclk
+UART2_RX_MUX=21
+
+# UART4 P9 pins 13(TX), 11(RX)
+MUX_UART4=yes
+UART4_TXD=/sys/kernel/debug/omap_mux/gpmc_wpn
+UART4_TX_MUX=6
+UART4_RXD=/sys/kernel/debug/omap_mux/gpmc_wait0
+UART4_RX_MUX=26
+
+# UART5 P8 pins 37(TX), 38(RX)
+MUX_UART5=yes
+UART5_TXD=/sys/kernel/debug/omap_mux/lcd_data8
+UART5_TX_MUX=4
+UART5_RXD=/sys/kernel/debug/omap_mux/lcd_data9
+UART5_RX_MUX=24
+
+
+if [ "$MUX_UART1"x = "yesx" ]; then
+    if [ -f $UART1_TXD ]; then
+        echo $UART1_TX_MUX > $UART1_TXD
+    fi
+
+    if [ -f $UART1_RXD ]; then
+        echo $UART1_RX_MUX > $UART1_RXD
+    fi
+fi
+
+
+if [ "$MUX_UART2"x = "yesx" ]; then
+    if [ -f $UART2_TXD ]; then
+        echo $UART2_TX_MUX > $UART2_TXD
+    fi
+
+    if [ -f $UART2_RXD ]; then
+        echo $UART2_RX_MUX > $UART2_RXD
+    fi
+fi
+
+
+if [ "$MUX_UART4"x = "yesx" ]; then
+    if [ -f $UART4_TXD ]; then
+        echo $UART4_TX_MUX > $UART4_TXD
+    fi
+
+    if [ -f $UART4_RXD ]; then
+        echo $UART4_RX_MUX > $UART4_RXD
+    fi
+fi
+
+
+if [ "$MUX_UART5"x = "yesx" ]; then
+    if [ -f $UART5_TXD ]; then
+        echo $UART5_TX_MUX > $UART5_TXD
+    fi
+
+    if [ -f $UART5_RXD ]; then
+        echo $UART5_RX_MUX > $UART5_RXD
+    fi
+fi
+

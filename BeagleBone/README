@@ -1,0 +1,70 @@
+Notes for using SyntroZigbee with BeagleBones
+
+The USB host port on the BeagleBone can be used with a USBSerial
+Zigbee board. If you choose this option, the device will appear
+as /dev/ttyUSB0 and you can use it like you would on any other
+Linux workstation.
+ 
+There are also 4 TTL serial lines available on the BeagleBone 
+header. Since Zigbee radios work off 3.3v the same as the
+BeagleBones, this is also a convenient option.
+
+The 4 serial ports available are
+
+UART1 (/dev/ttyO1) P9 pins 24(TX) 26(RX)
+
+UART2 (/dev/ttyO2) P9 pins 21(TX) 22(RX)
+
+UART4 (/dev/ttyO4) P9 pins 13(TX) 11(RX)
+
+UART5 (/dev/ttyO5) P8 pins 37(TX) 38(RX)
+
+
+
+Make sure the user is in the 'dialout' group to be able to use
+any of the serial ports. This applies whether you are using
+/dev/ttyUSBx or /dev/ttySOx
+
+You can check the group with grep: 
+
+scott@bone3:~$ grep dialout /etc/group
+dialout:x:20:ubuntu,scott
+
+You should see a line like the above with your username in the comma
+separated list at the end.
+
+If not, add the user to the group 'dialout' this way
+
+scott@bone3:~$ sudo usermod -a -G dialout scott
+
+
+For power, P9 pins 1(gnd) and 2(3.3v) will work.
+
+None of the UART pins are MUX'd for UART use by default, at least with
+the Ubuntu 12.04 kernel I am using:
+
+scott@bone3:~$ uname -a
+Linux bone3 3.2.0-psp6 #1 Thu Mar 22 02:26:38 UTC 2012 armv7l armv7l armv7l GNU/Linux
+
+
+There is a script called uart-mux that came with this README that
+you can use to setup the UARTs on startup.
+
+Copy the script to /etc/init.d/uart-mux and configure it to get
+run on startup for runlevel 2 which is the default for Ubuntu.
+
+scott@bone3:~$ sudo cp uart-mux /etc/init.d/uart-mux
+scott@bone3:~$ sudo chmod +x /etc/init.d/uart-mux
+scott@bone3:~$ sudo update-rc.d uart-mux start 95 2 .
+
+
+I suggest you take a look at the script and modify it if needed
+for your use. The default configuration enables all 4 UARTS.
+You may be using some of those pins for another purpose and not
+want this behavior.
+
+There is another script for checking the uart mux state called
+check-uart-mux.sh.
+
+You need to run it with root permissions, i.e. sudo or as the root user.
+
