@@ -99,14 +99,14 @@ bool ZigbeeController::openDevice(QSettings *settings)
 		break;
 
 	default:
-		qDebug("Invalid port baud rate %d", speed);
+        qDebug("Invalid port baud rate %d", speed);
 		return false;
 	}
 
 	m_port = new QextSerialPort(name, QextSerialPort::EventDriven);
 
 	if (!m_port) {
-		qDebug("Error creating serial port object");
+        qDebug("Error creating serial port object");
 		return false;
 	}
 
@@ -119,7 +119,7 @@ bool ZigbeeController::openDevice(QSettings *settings)
 	if (!m_port->open(QIODevice::ReadWrite)) {
 		delete m_port;
 		m_port = NULL;
-		qDebug("Error opening serial port");
+        qDebug("Error opening serial port %s", qPrintable(name));
 		return false;
 	}
 
