@@ -89,20 +89,39 @@ ZigbeeGatewayConsole::ZigbeeGatewayConsole(QSettings *settings, QObject *parent)
 
 void ZigbeeGatewayConsole::aboutToQuit()
 {
-	m_client->exitThread();
+    if (m_client) {
+        if (m_controller) {
+            connect(m_controller, SIGNAL(receiveData(quint64, QByteArray)),
+                m_client, SLOT(receiveData(quint64, QByteArray)), Qt::DirectConnection);
 
-	for (int i = 0; i < 5; i++) {
-		if (wait(1000))
-			break;
+            connect(m_client, SIGNAL(sendData(quint64,QByteArray)),
+                m_controller, SLOT(sendData(quint64,QByteArray)), Qt::DirectConnection);
 
-		printf("Waiting for Syntro client thread to exit...\n");
-	}
+            connect(m_controller, SIGNAL(localRadioAddress(quint64)),
+                m_client, SLOT(localRadioAddress(quint64)));
+
+            connect(m_client, SIGNAL(requestNodeDiscover()),
+                m_controller, SLOT(requestNodeDiscover()));
+
+            connect(m_controller, SIGNAL(nodeDiscoverResponse(QList<ZigbeeStats>)),
+                m_client, SLOT(nodeDiscoverResponse(QList<ZigbeeStats>)), Qt::DirectConnection);
+        }
+
+        m_client->exitThread();
+    }
 
 	if (m_controller) {
 		m_controller->closeDevice();
 		delete m_controller;
 		m_controller = NULL;
 	}
+
+    for (int i = 0; i < 5; i++) {
+        if (wait(1000))
+            break;
+
+        printf("Waiting for Syntro console thread to exit...\n");
+    }
 }
 
 void ZigbeeGatewayConsole::loadNodeIDList()
@@ -190,6 +209,7 @@ void ZigbeeGatewayConsole::showHelp()
 {
 	printf("\nOptions:\n\n");
 	printf("  S - Show radio stats\n");
+    printf("  D - Run node discover query\n");
 	printf("  H - Show this help\n");
 	printf("  X - Exit\n");
 }
@@ -218,6 +238,10 @@ void ZigbeeGatewayConsole::run()
 			showStats();
 			printf("\n");
 			break;
+
+        case 'D':
+            emit requestNodeDiscover();
+            break;
 
 		case 'H':
 			printf("\n");
