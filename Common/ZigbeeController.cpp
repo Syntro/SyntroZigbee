@@ -631,13 +631,15 @@ void ZigbeeController::handleNDResponsePacket(QByteArray packet, int packetLen)
 	if (m_zbStats.contains(newZB->m_address)) {
 		ZigbeeStats *zb = m_zbStats.value(newZB->m_address);
 
-		// now compare and update
-		if (newZB->m_netAddress != zb->m_netAddress) {
-			debugDump("New netAddress", packet);
-		}
-		else if (newZB->m_nodeID != zb->m_nodeID) {
-			debugDump("New nodeID", packet);
-		}
+        if (m_debugDump) {
+            if (newZB->m_netAddress != zb->m_netAddress) {
+                debugDump("New netAddress", packet);
+            }
+
+            if (newZB->m_nodeID != zb->m_nodeID) {
+                debugDump("New nodeID", packet);
+            }
+        }
 
 		zb->updateFromNodeDiscovery(newZB);
 		delete newZB;
