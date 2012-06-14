@@ -36,11 +36,16 @@ int openPort(const char *port, int speed);
 void closePort(int fd);
 int setSigHandler();
 void sigHandler(int sig);
-unsigned char calculateChecksum(unsigned char *buff, int len);
+
 void processCommand(int fd, unsigned char *rxBuff, int len);
-void handleRead(int fd, unsigned char *rxBuff, int start, int dataLen);
+void processReadCommand(int fd, unsigned char *rxBuff, int start, int dataLen);
+void processWriteCommand(unsigned char *rxBuff, int start, int dataLen); 
+void sendLocalATCommand(int fd, unsigned char frameID, unsigned int command);
+void processATCommandResponse(int fd, unsigned char *rxBuff, int len);
+
 void writePacket(int fd, unsigned char *txBuff, int len);
-void handleWrite(unsigned char *rxBuff, int start, int dataLen); 
+unsigned char calculateChecksum(unsigned char *buff, int len);
+
 void debugDump(const char *prompt, unsigned char *buff, int len);
 void msleep(int ms);
 unsigned int getU32(unsigned char *buff);
@@ -51,6 +56,9 @@ void putU32(unsigned char *buff, unsigned int val);
 struct termios oldtio;
 int shutdownTime;
 int verbose;
+unsigned int localRadioAddressLow;
+unsigned int localRadioAddressHigh;
+
 
 void usage(const char *argv_0)
 {
@@ -223,10 +231,15 @@ void closePort(int fd)
 #define STATE_GET_CHECKSUM             4
 
 #define ZIGBEE_START_DELIM             0x7E
+
+#define ZIGBEE_FT_AT_COMMAND           0x08
 #define ZIGBEE_FT_TRANSMIT_REQUEST     0x10
+#define ZIGBEE_FT_AT_COMMAND_RESPONSE  0x88
 #define ZIGBEE_FT_RECEIVE_PACKET       0x90
 #define ZIGBEE_FT_EXPLICIT_RX_IND      0x91
 
+#define ZIGBEE_AT_CMD_SH               0x5348
+#define ZIGBEE_AT_CMD_SL               0x534C
 
 void runCommandLoop(int fd)
 {
@@ -243,6 +256,9 @@ void runCommandLoop(int fd)
 
 	if (verbose)
 		printf("Starting run loop\n");
+
+
+	sendLocalATCommand(fd, 0x01, ZIGBEE_AT_CMD_SH);
 
 	while (!shutdownTime) {
 		readlen = read(fd, &c, 1);
@@ -284,8 +300,10 @@ void runCommandLoop(int fd)
 		case STATE_GET_FRAME_TYPE:
 			buff[count++] = c;
 
-			if (c == ZIGBEE_FT_RECEIVE_PACKET || c == ZIGBEE_FT_EXPLICIT_RX_IND)
-				state = STATE_GET_DATA;
+			if (c == ZIGBEE_FT_RECEIVE_PACKET ||
+						c == ZIGBEE_FT_EXPLICIT_RX_IND ||
+						c == ZIGBEE_FT_AT_COMMAND_RESPONSE)
+				state = STATE_GET_DATA;           
 			else
 				state = STATE_GET_START_DELIMITER;
 
@@ -309,6 +327,8 @@ void runCommandLoop(int fd)
 
 			if (c != buff[count - 1])
 				printf("Invalid checksum\n");
+			else if (buff[3] == ZIGBEE_FT_AT_COMMAND_RESPONSE)
+				processATCommandResponse(fd, buff, count);
 			else
 				processCommand(fd, buff, count);
 
@@ -352,14 +372,14 @@ void processCommand(int fd, unsigned char *rxBuff, int framelen)
 
 	// consider this a read command, the data is a mask of 'registers' to read
 	if (datalen == 4) {
-		handleRead(fd, rxBuff, start, datalen);
+		processReadCommand(fd, rxBuff, start, datalen);
 	}
 	else {
-		handleWrite(rxBuff, start, datalen);
+		processWriteCommand(rxBuff, start, datalen);
 	}	
 }
 
-void handleRead(int fd, unsigned char *rxBuff, int start, int dataLen)
+void processReadCommand(int fd, unsigned char *rxBuff, int start, int dataLen)
 {
 	int i, j, count;
 	unsigned int packetlen, mask, val;
@@ -427,6 +447,74 @@ void handleRead(int fd, unsigned char *rxBuff, int start, int dataLen)
 	free(txBuff);
 }
 
+void sendLocalATCommand(int fd, unsigned char frameID, unsigned int command)
+{
+	unsigned char txBuff[16];
+
+	txBuff[0] = ZIGBEE_START_DELIM;
+	txBuff[1] = 0x00;
+	txBuff[2] = 0x04;
+    txBuff[3] = ZIGBEE_FT_AT_COMMAND;
+    txBuff[4] = frameID;
+	txBuff[5] = 0xff & (command >> 8);
+	txBuff[6] = 0xff & command;
+	txBuff[7] = calculateChecksum(txBuff + 3, 4);
+
+	if (verbose)
+		debugDump("AT tx:", txBuff, 8);
+
+	writePacket(fd, txBuff, 8);	
+}
+
+void processATCommandResponse(int fd, unsigned char *rxBuff, int len)
+{
+	if (len < 8) {
+		debugDump("AT rx too short:", rxBuff, len);
+		return;
+	}
+
+	unsigned char status = rxBuff[7];
+
+	if (status != 0) {
+		debugDump("AT bad status:", rxBuff, len);
+		return;
+	}
+
+	unsigned int cmd = rxBuff[5];
+	cmd <<= 8;
+	cmd += rxBuff[6];
+
+	switch (cmd) {
+	case ZIGBEE_AT_CMD_SH:
+		if (len == 13) {
+			localRadioAddressHigh = getU32(rxBuff + 8);
+			sendLocalATCommand(fd, 0x02, ZIGBEE_AT_CMD_SL);
+		}
+		else {
+			debugDump("Bad AT SH rx:", rxBuff, len);
+		}
+		
+		break;
+
+	case ZIGBEE_AT_CMD_SL:
+		if (len == 13) {
+			localRadioAddressLow = getU32(rxBuff + 8);
+			
+			printf("\nlocalAddress: %08X%08X\n", 
+				localRadioAddressHigh, localRadioAddressLow);
+		}
+		else {
+			debugDump("Bad AT SL rx:", rxBuff, len);
+		}
+
+		break;
+
+	default:
+		debugDump("Unhandled AT CMD response:", rxBuff, len);
+		break;
+	}
+}
+
 void writePacket(int fd, unsigned char *txBuff, int len)
 {
 	int count;
@@ -444,7 +532,7 @@ void writePacket(int fd, unsigned char *txBuff, int len)
 	}
 }
 
-void handleWrite(unsigned char *rxBuff, int start, int dataLen)
+void processWriteCommand(unsigned char *rxBuff, int start, int dataLen)
 {
 	int i, j, count;
 	unsigned int mask, val;
