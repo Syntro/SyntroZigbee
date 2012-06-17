@@ -37,7 +37,7 @@
 
 // Comment this out if you aren't connected to USBSerial or are not
 // running the Serial Monitor
-#define USBSERIAL_DEBUG
+//#define USBSERIAL_DEBUG
 
 #define STATE_GET_START_DELIMITER 0
 #define STATE_GET_LENGTH 1
