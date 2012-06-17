@@ -62,8 +62,9 @@
 
 #define MAX_RX_FRAMELEN 28
 
-// you can assign BOARD_LED_PIN for this if you want to test without a sensor
-#define MOTION_SENSOR_PIN 5
+// you can assign BOARD_BUTTON_PIN for this if you want to test without a sensor
+#define MOTION_SENSOR_PIN 20
+//#define MOTION_SENSOR_PIN (BOARD_BUTTON_PIN)
 
 unsigned int rxState;
 unsigned int rxCount;
@@ -99,8 +100,8 @@ void loop()
                	sendState();
                
                 if (sensorState) {
-                    // the sensor stays armed for 5 seconds                        
-	       	    nextSendTime = millis() + 5000;
+                    // the sensor stays armed for 3 seconds                        
+	       	    nextSendTime = millis() + 3000;
                 }
                 else {
                     nextSendTime = millis() + 100;
