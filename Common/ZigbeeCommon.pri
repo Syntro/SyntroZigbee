@@ -4,8 +4,8 @@ INCLUDEPATH += $$PWD
 DEPENDPATH += $$PWD
 
 HEADERS += ZigbeeController.h \
-	ZigbeeStats.h \
-	ZigbeeCommon.h \
+    ZigbeeStats.h \
+    ZigbeeCommon.h \
     ZigbeeUtils.h \
     SerialPortDlg.h
 

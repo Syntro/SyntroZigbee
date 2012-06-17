@@ -47,7 +47,10 @@
     <ClCompile Include="GeneratedFiles\Release\moc_SyntroZigbeeDemo.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
-    <ClCompile Include="ZigbeeClient.cpp">
+    <ClCompile Include="..\Common\ZigbeeUtils.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Common\ZigbeeStats.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="GeneratedFiles\Debug\moc_ZigbeeClient.cpp">
@@ -56,10 +59,7 @@
     <ClCompile Include="GeneratedFiles\Release\moc_ZigbeeClient.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
-    <ClCompile Include="..\Common\ZigbeeUtils.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Common\ZigbeeStats.cpp">
+    <ClCompile Include="..\Common\ZigbeeClient.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -70,7 +70,7 @@
     <CustomBuild Include="syntrozigbeedemo.ui">
       <Filter>Form Files</Filter>
     </CustomBuild>
-    <CustomBuild Include="ZigbeeClient.h">
+    <CustomBuild Include="..\Common\ZigbeeClient.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
   </ItemGroup>
