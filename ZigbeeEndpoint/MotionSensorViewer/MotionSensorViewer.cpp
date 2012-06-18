@@ -126,7 +126,7 @@ void MotionSensorViewer::timerEvent(QTimerEvent *timerEvent)
 
 void MotionSensorViewer::updateSensorState(quint32 sensor, bool state)
 {
-	if (sensor < m_sensorDisplay.count()) {
+	if ((int)sensor < m_sensorDisplay.count()) {
 		QLabel *sensorLabel = m_sensorDisplay.at(sensor);
 
 		QPalette pal(sensorLabel->palette());
