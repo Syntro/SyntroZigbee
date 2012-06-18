@@ -22,7 +22,7 @@ DEFINES += QT_NETWORK_LIB
 
 INCLUDEPATH += GeneratedFiles \
     GeneratedFiles/Release \
-    ../Common
+    ../../Common
 
 win32-g++:LIBS += -L"$(SYNTRODIR)/bin"
 
