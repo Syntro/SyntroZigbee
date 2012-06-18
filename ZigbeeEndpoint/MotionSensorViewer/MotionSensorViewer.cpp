@@ -132,9 +132,9 @@ void MotionSensorViewer::updateSensorState(quint32 sensor, bool state)
 		QPalette pal(sensorLabel->palette());
 		
 		if (state)
-			pal.setColor(QPalette::Window, Qt::red);
-		else
 			pal.setColor(QPalette::Window, Qt::green);
+		else
+			pal.setColor(QPalette::Window, Qt::transparent);
 
 		sensorLabel->setPalette(pal);		
 	}
@@ -173,6 +173,8 @@ void MotionSensorViewer::layoutWindow()
 
 	for (int i = 0; i < m_addresses.count(); i++) {
 		QLabel *label = new QLabel(m_locations.at(i), centralWidget);
+		label->setMinimumSize(QSize(0, 32));
+		label->setMaximumSize(QSize(100, 32));
 		formLayout->setWidget(i, QFormLayout::LabelRole, label);
 
 		QLabel *value = new QLabel(centralWidget);
