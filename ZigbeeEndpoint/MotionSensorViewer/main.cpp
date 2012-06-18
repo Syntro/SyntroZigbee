@@ -46,7 +46,7 @@ QSettings *loadSettings(QStringList arglist)
 		settings->setValue(SENSOR_LOCATION, "Garage");
 		settings->setArrayIndex(1);
 		settings->setValue(SENSOR_ZB_ADDRESS, "0x0013a200408d4b96");
-		settings->setValue(SENSOR_LOCATION, "GreenHouse");
+		settings->setValue(SENSOR_LOCATION, "Office");
 		settings->setArrayIndex(2);
 		settings->setValue(SENSOR_ZB_ADDRESS, "0x0013a2004081abe3");
 		settings->setValue(SENSOR_LOCATION, "Back Deck");
