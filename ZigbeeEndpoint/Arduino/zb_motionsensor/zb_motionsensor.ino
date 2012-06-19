@@ -63,21 +63,23 @@
 
 #define MOTION_SENSOR_PIN 2
 
+
 unsigned int rxState;
 unsigned int rxCount;
 unsigned int rxFrameLength;
 unsigned char rxBuff[MAX_RX_FRAMELEN + 4];
 unsigned char clientAddress[10];
-bool haveClient;
-int sensorState;
+bool armed;
+int motionDetected;
 unsigned long nextSendTime;
 
 void setup() 
 {
   rxState = STATE_GET_START_DELIMITER;
   rxCount = 0;
-  haveClient = false;    
-  sensorState = -1;
+  armed = false;
+  // set to an invalid value so we detect 'change' on the first sensor read  
+  motionDetected = -1;
   nextSendTime = 0;
 
   Serial.begin(115200);  
@@ -91,12 +93,12 @@ void loop()
     processCommand();
   }
 
-  if (haveClient) {
+  if (armed) {
     if (millis() > nextSendTime) {
       if (stateChanged()) {
-        sendState();
+        sendSensorState();
               
-        if (sensorState) {
+        if (motionDetected) {
           // the sensor stays armed for 3 seconds                        
           nextSendTime = millis() + 3000;
         }
@@ -112,8 +114,8 @@ bool stateChanged()
 {
   int val = digitalRead(MOTION_SENSOR_PIN);
   
-  if (sensorState != val) {
-    sensorState = val;
+  if (motionDetected != val) {
+    motionDetected = val;
     return true;
   }
 
@@ -138,7 +140,7 @@ void processCommand()
   }
     
   if (val == 0) {
-    haveClient = false;
+    armed = false;
     digitalWrite(BOARD_LED_PIN, LOW);
   }
   else {
@@ -147,19 +149,19 @@ void processCommand()
       clientAddress[i] = rxBuff[i + 4];
     }
 
-    haveClient = true;
+    armed = true;
     // so we don't respond immediately
     delay(50);
     digitalWrite(BOARD_LED_PIN, HIGH);
   }
 }    
 
-void sendState()
+void sendSensorState()
 {   
   int i;
   unsigned char tx[24];
       
-  // most tx fields that never change
+  // most tx fields never change
   tx[0] = 0x7E;
   tx[1] = 0;      // len MSB
   tx[2] = 15;     // len LSB    
@@ -168,14 +170,14 @@ void sendState()
 
   // bytes 5-12 are the dest address
   // bytes 13-14 are the dest net address
-  // they need to be filled in when we know our dest
+  // we saved this when we got armed
   for (i = 0; i < 10; i++) {
     tx[i+5] = clientAddress[i];
   }
     
   tx[15] = 0x00;  // broadcast radius, default
   tx[16] = 0x00;  // no options
-  tx[17] = 0xff & sensorState;
+  tx[17] = 0xff & motionDetected;
   tx[18] = calculateChecksum(tx + 3, 15);
       
   Serial.write(tx, 19);  
