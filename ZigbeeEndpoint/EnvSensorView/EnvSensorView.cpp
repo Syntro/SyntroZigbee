@@ -289,7 +289,7 @@ void EnvSensorView::layoutWindow()
 	QLabel *location = new QLabel("Location", centralWidget);
 	layout->addWidget(location, 0, 0);
 
-	QLabel *temperature = new QLabel("Temperature", centralWidget);
+	QLabel *temperature = new QLabel("Temp", centralWidget);
 	layout->addWidget(temperature, 0, 1);
 
 	QLabel *light = new QLabel("Light", centralWidget);
