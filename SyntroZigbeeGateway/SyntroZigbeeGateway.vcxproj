@@ -92,7 +92,7 @@
     <ClCompile Include="GeneratedFiles\Debug\moc_SyntroZigbeeGateway.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_ZigbeeClient.cpp">
+    <ClCompile Include="GeneratedFiles\Debug\moc_ZigbeeGWClient.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="GeneratedFiles\Debug\moc_ZigbeeController.cpp">
@@ -114,7 +114,7 @@
     <ClCompile Include="GeneratedFiles\Release\moc_SyntroZigbeeGateway.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_ZigbeeClient.cpp">
+    <ClCompile Include="GeneratedFiles\Release\moc_ZigbeeGWClient.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="GeneratedFiles\Release\moc_ZigbeeController.cpp">
@@ -125,7 +125,7 @@
     </ClCompile>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="SyntroZigbeeGateway.cpp" />
-    <ClCompile Include="ZigbeeClient.cpp" />
+    <ClCompile Include="ZigbeeGWClient.cpp" />
     <ClCompile Include="ZigbeeDevice.cpp" />
     <ClCompile Include="ZigbeeGatewayConsole.cpp" />
   </ItemGroup>
@@ -213,13 +213,13 @@
     <ClInclude Include="..\Common\ZigbeeUtils.h" />
     <ClInclude Include="GeneratedFiles\ui_syntrozigbeegateway.h" />
     <ClInclude Include="ZigbeeDevice.h" />
-    <CustomBuild Include="ZigbeeClient.h">
+    <CustomBuild Include="ZigbeeGWClient.h">
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Moc%27ing ZigbeeClient.h...</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Moc%27ing ZigbeeGWClient.h...</Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">"$(QTDIR)\bin\moc.exe"   -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_DLL -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT  "-I." "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include" "-I.\GeneratedFiles" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I$(QTDIR)\include\QtNetwork" "-I$(SYNTRODIR)\include" "-I.\..\3rdparty\qextserialport\src" "-I$(QTDIR)\include\ActiveQt" "-I.\Debug" "-I$(QTDIR)\mkspecs\default" "-I.\..\Common" "-I." "-I." "-I." "-I." "%(FullPath)" -o ".\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp"</Command>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Moc%27ing ZigbeeClient.h...</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Moc%27ing ZigbeeGWClient.h...</Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">"$(QTDIR)\bin\moc.exe"   -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB  "-I." "-I.\GeneratedFiles" "-I$(QTDIR)\include" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtNetwork" "-I$(SYNTRODIR)\include" "-I.\..\3rdparty\qextserialport\src" "-I$(QTDIR)\include\ActiveQt" "-I$(QTDIR)\mkspecs\default" "-I.\..\Common" "-I." "-I." "-I." "-I." "%(FullPath)" -o ".\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp"</Command>
     </CustomBuild>

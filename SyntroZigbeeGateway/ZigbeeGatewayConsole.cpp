@@ -31,7 +31,7 @@ ZigbeeGatewayConsole::ZigbeeGatewayConsole(QSettings *settings, QObject *parent)
 {
 	m_controller = NULL;
 
-	m_client = new ZigbeeClient(parent, settings);
+	m_client = new ZigbeeGWClient(parent, settings);
 	m_client->resumeThread();
 
 	m_portName = m_settings->value(ZIGBEE_PORT).toString();

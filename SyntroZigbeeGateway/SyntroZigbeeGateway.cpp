@@ -45,7 +45,7 @@ SyntroZigbeeGateway::SyntroZigbeeGateway(QSettings *settings, QWidget *parent, Q
 	m_controller = NULL;
 	m_refreshTimer = 0;
 
-	m_client = new ZigbeeClient(this, settings);
+	m_client = new ZigbeeGWClient(this, settings);
 	m_client->resumeThread();
 
 	m_syntroStatusTimer = startTimer(3000);

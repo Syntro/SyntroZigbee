@@ -23,7 +23,7 @@
 #include <QThread>
 #include <QSettings>
 
-#include "ZigbeeClient.h"
+#include "ZigbeeGWClient.h"
 #include "ZigbeeController.h"
 
 class ZigbeeGatewayConsole : public QThread
@@ -52,7 +52,7 @@ private:
 	void showHelp();
 
 	QSettings *m_settings;
-	ZigbeeClient *m_client;
+	ZigbeeGWClient *m_client;
 	ZigbeeController *m_controller;
 	quint64 m_localAddress;
 

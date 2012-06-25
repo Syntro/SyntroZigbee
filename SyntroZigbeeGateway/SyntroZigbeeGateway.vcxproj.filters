@@ -47,16 +47,16 @@
     <ClCompile Include="GeneratedFiles\Release\moc_SyntroZigbeeGateway.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
-    <ClCompile Include="ZigbeeClient.cpp">
+    <ClCompile Include="ZigbeeGWClient.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ZigbeeDevice.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_ZigbeeClient.cpp">
+    <ClCompile Include="GeneratedFiles\Debug\moc_ZigbeeGWClient.cpp">
       <Filter>Generated Files\Debug</Filter>
     </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_ZigbeeClient.cpp">
+    <ClCompile Include="GeneratedFiles\Release\moc_ZigbeeGWClient.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
     <ClCompile Include="GeneratedFiles\Debug\moc_ZigbeeController.cpp">
@@ -124,7 +124,7 @@
     <CustomBuild Include="syntrozigbeegateway.ui">
       <Filter>Form Files</Filter>
     </CustomBuild>
-    <CustomBuild Include="ZigbeeClient.h">
+    <CustomBuild Include="ZigbeeGWClient.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
     <CustomBuild Include="..\Common\ZigbeeController.h">

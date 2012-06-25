@@ -25,7 +25,7 @@
 #include <qlabel.h>
 #include <qpushbutton.h>
 
-#include "ZigbeeClient.h"
+#include "ZigbeeGWClient.h"
 #include "ZigbeeController.h"
 
 #include "ui_syntrozigbeegateway.h"
@@ -70,7 +70,7 @@ private:
 	Ui::SyntroZigbeeGatewayClass ui;
 
 	QSettings *m_settings;
-	ZigbeeClient *m_client;
+	ZigbeeGWClient *m_client;
 	ZigbeeController *m_controller;
 
 	int m_syntroStatusTimer;

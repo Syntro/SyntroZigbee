@@ -28,12 +28,12 @@
 #include "ZigbeeCommon.h"
 #include "ZigbeeStats.h"
 
-class ZigbeeClient : public Endpoint
+class ZigbeeGWClient : public Endpoint
 {
 	Q_OBJECT
 
 public:
-	ZigbeeClient(QObject *parent, QSettings *settings);
+	ZigbeeGWClient(QObject *parent, QSettings *settings);
 
 public slots:
 	void receiveData(quint64 address, QByteArray data);

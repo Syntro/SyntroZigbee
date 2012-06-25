@@ -17,17 +17,17 @@
 //  along with Syntro.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#include "ZigbeeClient.h"
+#include "ZigbeeGWClient.h"
 #include "ZigbeeUtils.h"
 
-#define	ZIGBEECLIENT_BACKGROUND_INTERVAL (SYNTRO_CLOCKS_PER_SEC / 10)
+#define	ZigbeeGWClient_BACKGROUND_INTERVAL (SYNTRO_CLOCKS_PER_SEC / 10)
 
 #define ZIGBEE_DATA_TYPE (SYNTRO_RECORD_TYPE_USER)
 
 
 
-ZigbeeClient::ZigbeeClient(QObject *parent, QSettings *settings)
-	: Endpoint(parent, settings, ZIGBEECLIENT_BACKGROUND_INTERVAL)
+ZigbeeGWClient::ZigbeeGWClient(QObject *parent, QSettings *settings)
+	: Endpoint(parent, settings, ZigbeeGWClient_BACKGROUND_INTERVAL)
 {
 	m_multicastPort = -1;
 	m_e2ePort = -1;
@@ -35,12 +35,12 @@ ZigbeeClient::ZigbeeClient(QObject *parent, QSettings *settings)
 	m_localZigbeeAddress = 0;
 }
 
-void ZigbeeClient::localRadioAddress(quint64 address)
+void ZigbeeGWClient::localRadioAddress(quint64 address)
 {
 	m_localZigbeeAddress = address;
 }
 
-void ZigbeeClient::appClientInit()
+void ZigbeeGWClient::appClientInit()
 {
 	quint64 address;
 	bool ok;
@@ -104,7 +104,7 @@ void ZigbeeClient::appClientInit()
 	m_settings->endArray();	
 }
 
-void ZigbeeClient::appClientBackground()
+void ZigbeeGWClient::appClientBackground()
 {
 	if (!clientIsServiceActive(m_multicastPort))
 		return;
@@ -117,7 +117,7 @@ void ZigbeeClient::appClientBackground()
 	sendReceivedData();
 }
 
-void ZigbeeClient::appClientReceiveE2E(int servicePort, SYNTRO_EHEAD *header, int length)
+void ZigbeeGWClient::appClientReceiveE2E(int servicePort, SYNTRO_EHEAD *header, int length)
 {
 	ZigbeeDevice *zb;
 
@@ -191,13 +191,13 @@ void ZigbeeClient::appClientReceiveE2E(int servicePort, SYNTRO_EHEAD *header, in
 	free(header);
 }
 
-void ZigbeeClient::issuePollRequests()
+void ZigbeeGWClient::issuePollRequests()
 {
 	// TODO
 }
 
 // TODO: process more then one rx packet if we have them
-void ZigbeeClient::sendReceivedData()
+void ZigbeeGWClient::sendReceivedData()
 {
 	quint64 address = 0;
 
@@ -230,7 +230,7 @@ void ZigbeeClient::sendReceivedData()
 	clientSendMessage(m_multicastPort, multicast, length, SYNTROLINK_MEDPRI);
 }
 
-QByteArray ZigbeeClient::getRxData(quint64 *address)
+QByteArray ZigbeeGWClient::getRxData(quint64 *address)
 {
 	QMutexLocker lock(&m_rxMutex);
 	QByteArray data;
@@ -243,7 +243,7 @@ QByteArray ZigbeeClient::getRxData(quint64 *address)
 	return data;	
 }
 
-void ZigbeeClient::receiveData(quint64 address, QByteArray data)
+void ZigbeeGWClient::receiveData(quint64 address, QByteArray data)
 {
 	QMutexLocker lock(&m_rxMutex);
 
@@ -263,7 +263,7 @@ void ZigbeeClient::receiveData(quint64 address, QByteArray data)
 }
 
 // we only support one command right now, node discovery 'ND'
-void ZigbeeClient::executeLocalRadioCommand(quint8 *request, int length)
+void ZigbeeGWClient::executeLocalRadioCommand(quint8 *request, int length)
 {
 	if (length < 2)
 		return;
@@ -272,7 +272,7 @@ void ZigbeeClient::executeLocalRadioCommand(quint8 *request, int length)
 		emit requestNodeDiscover(); 
 }
 
-void ZigbeeClient::nodeDiscoverResponse(QList<ZigbeeStats> list)
+void ZigbeeGWClient::nodeDiscoverResponse(QList<ZigbeeStats> list)
 {
 	QByteArray data;
 	int i, j, len;

@@ -1,12 +1,12 @@
 HEADERS += \
     SyntroZigbeeGateway.h \
-    ZigbeeClient.h \
+    ZigbeeGWClient.h \
     ZigbeeDevice.h \
     ZigbeeGatewayConsole.h
 
 SOURCES += main.cpp \
     SyntroZigbeeGateway.cpp \
-    ZigbeeClient.cpp \
+    ZigbeeGWClient.cpp \
     ZigbeeDevice.cpp \
     ZigbeeGatewayConsole.cpp
 
