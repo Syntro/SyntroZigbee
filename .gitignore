@@ -3,6 +3,7 @@ SyntroZigbeeDemo/Makefile*
 ZigbeeTestNode/Makefile*
 ZigbeeEndpoint/virt-regs/virt-regs
 ZigbeeEndpoint/MotionSensorViewer/Makefile*
+ZigbeeEndpoint/EnvSensorView/Makefile*
 Debug/
 Release/
 Output/
