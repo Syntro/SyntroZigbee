@@ -125,6 +125,7 @@
     </ClCompile>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="SyntroZigbeeGateway.cpp" />
+    <ClCompile Include="ZigbeeData.cpp" />
     <ClCompile Include="ZigbeeGWClient.cpp" />
     <ClCompile Include="ZigbeeDevice.cpp" />
     <ClCompile Include="ZigbeeGatewayConsole.cpp" />
@@ -212,6 +213,22 @@
     <ClInclude Include="..\Common\ZigbeeStats.h" />
     <ClInclude Include="..\Common\ZigbeeUtils.h" />
     <ClInclude Include="GeneratedFiles\ui_syntrozigbeegateway.h" />
+    <CustomBuild Include="ZigbeeData.h">
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(AdditionalInputs)</AdditionalInputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(AdditionalInputs)</AdditionalInputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </Command>
+    </CustomBuild>
     <ClInclude Include="ZigbeeDevice.h" />
     <CustomBuild Include="ZigbeeGWClient.h">
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>

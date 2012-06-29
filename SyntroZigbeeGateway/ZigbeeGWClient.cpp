@@ -24,7 +24,9 @@
 
 #define ZIGBEE_DATA_TYPE (SYNTRO_RECORD_TYPE_USER)
 
+#define ZIGBEE_DATA_EXPIRE_TIME (60 * SYNTRO_CLOCKS_PER_SEC)
 
+#define MAX_RX_QUEUE_SIZE 100
 
 ZigbeeGWClient::ZigbeeGWClient(QObject *parent, QSettings *settings)
 	: Endpoint(parent, settings, ZigbeeGWClient_BACKGROUND_INTERVAL)
@@ -33,6 +35,7 @@ ZigbeeGWClient::ZigbeeGWClient(QObject *parent, QSettings *settings)
 	m_e2ePort = -1;
 	m_promiscuousMode = false;
 	m_localZigbeeAddress = 0;
+	m_rxQPurgeTime = ZIGBEE_DATA_EXPIRE_TIME;
 }
 
 void ZigbeeGWClient::localRadioAddress(quint64 address)
@@ -106,6 +109,13 @@ void ZigbeeGWClient::appClientInit()
 
 void ZigbeeGWClient::appClientBackground()
 {
+	m_rxQPurgeTime--;
+
+	if (m_rxQPurgeTime <= 0) {
+		purgeExpiredQueueData();
+		m_rxQPurgeTime = ZIGBEE_DATA_EXPIRE_TIME;
+	}
+
 	if (!clientIsServiceActive(m_multicastPort))
 		return;
 
@@ -199,14 +209,12 @@ void ZigbeeGWClient::issuePollRequests()
 // TODO: process more then one rx packet if we have them
 void ZigbeeGWClient::sendReceivedData()
 {
-	quint64 address = 0;
+	ZigbeeData zbData;
 
-	QByteArray data = getRxData(&address);
-
-	if (data.length() == 0)
+	if (!getRxData(&zbData))
 		return;
 
-	int length = sizeof(SYNTRO_RECORD_HEADER) + sizeof(quint64) + data.length();
+	int length = sizeof(SYNTRO_RECORD_HEADER) + sizeof(quint64) + zbData.m_data.length();
 
 	SYNTRO_EHEAD *multicast = clientBuildMessage(m_multicastPort, length);
 	if (!multicast)
@@ -223,24 +231,23 @@ void ZigbeeGWClient::sendReceivedData()
 	quint8 *p = (quint8 *)(head + 1);
 
 	for (int i = 56; i >= 0; i -= 8)
-		*p++ = 0xff & (address >> i);
+		*p++ = 0xff & (zbData.m_address >> i);
 
-	memcpy(p, data.constData(), data.length());
+	memcpy(p, zbData.m_data.constData(), zbData.m_data.length());
 
 	clientSendMessage(m_multicastPort, multicast, length, SYNTROLINK_MEDPRI);
 }
 
-QByteArray ZigbeeGWClient::getRxData(quint64 *address)
+bool ZigbeeGWClient::getRxData(ZigbeeData *zbData)
 {
 	QMutexLocker lock(&m_rxMutex);
-	QByteArray data;
+	
+	if (m_rxQ.empty())
+		return false;
 
-	if (!m_rxQ.empty()) {
-		data = m_rxQ.dequeue();
-		*address = m_rxAddressQ.dequeue();
-	}
+	*zbData = m_rxQ.dequeue();
 
-	return data;	
+	return true;
 }
 
 void ZigbeeGWClient::receiveData(quint64 address, QByteArray data)
@@ -248,8 +255,10 @@ void ZigbeeGWClient::receiveData(quint64 address, QByteArray data)
 	QMutexLocker lock(&m_rxMutex);
 
 	if (m_devices.contains(address) || m_promiscuousMode) {
-		m_rxAddressQ.enqueue(address);
-		m_rxQ.enqueue(data);
+		while (m_rxQ.size() > MAX_RX_QUEUE_SIZE)
+			m_rxQ.removeFirst();
+
+		m_rxQ.enqueue(ZigbeeData(address, ZIGBEE_DATA_EXPIRE_TIME + SyntroClock(), data));
 	}
 	else {
 		if (m_badRxDevices.contains(address)) {
@@ -309,7 +318,22 @@ void ZigbeeGWClient::nodeDiscoverResponse(QList<ZigbeeStats> list)
 
 	// add to the multicast rx queue
 	m_rxMutex.lock();
-	m_rxAddressQ.enqueue(0);
-	m_rxQ.enqueue(data);
+	m_rxQ.enqueue(ZigbeeData(0, SyntroClock(), data));
 	m_rxMutex.unlock();
+}
+
+void ZigbeeGWClient::purgeExpiredQueueData()
+{
+	QMutexLocker lock(&m_rxMutex);
+
+	qint64 now = SyntroClock();
+
+	while (!m_rxQ.isEmpty()) {
+		ZigbeeData zbData = m_rxQ.first();
+
+		if (!zbData.expired(now))
+			break;
+
+		m_rxQ.removeFirst();
+	}
 }

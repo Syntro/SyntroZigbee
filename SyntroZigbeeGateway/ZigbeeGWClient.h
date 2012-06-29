@@ -27,6 +27,7 @@
 #include "ZigbeeDevice.h"
 #include "ZigbeeCommon.h"
 #include "ZigbeeStats.h"
+#include "ZigbeeData.h"
 
 class ZigbeeGWClient : public Endpoint
 {
@@ -52,18 +53,19 @@ protected:
 private:
 	void issuePollRequests();
 	void sendReceivedData();
-	QByteArray getRxData(quint64 *address);
+	bool getRxData(ZigbeeData *zbData);
 	void executeLocalRadioCommand(quint8 *request, int length);
+	void purgeExpiredQueueData();
 
 	int m_multicastPort;
 	int m_e2ePort;
 	bool m_promiscuousMode;
 	quint64 m_localZigbeeAddress;
-
+	
 	QMap<quint64, ZigbeeDevice *> m_devices;
 	QMutex m_rxMutex;
-	QQueue<QByteArray> m_rxQ;
-	QQueue<quint64> m_rxAddressQ;
+	QQueue<ZigbeeData> m_rxQ;
+	int m_rxQPurgeTime;
 
 	QMap<quint64, int> m_badRxDevices;
 	QMap<quint64, int> m_badTxDevices;

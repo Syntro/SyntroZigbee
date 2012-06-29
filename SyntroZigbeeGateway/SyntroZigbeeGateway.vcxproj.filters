@@ -116,6 +116,9 @@
     <ClCompile Include="..\Common\SerialPortDlg.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ZigbeeData.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="SyntroZigbeeGateway.h">
@@ -140,6 +143,9 @@
       <Filter>Header Files</Filter>
     </CustomBuild>
     <CustomBuild Include="..\Common\SerialPortDlg.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="ZigbeeData.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
   </ItemGroup>
