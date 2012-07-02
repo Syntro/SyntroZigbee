@@ -35,7 +35,7 @@ ZigbeeGWClient::ZigbeeGWClient(QObject *parent, QSettings *settings)
 	m_e2ePort = -1;
 	m_promiscuousMode = false;
 	m_localZigbeeAddress = 0;
-	m_rxQPurgeTime = ZIGBEE_DATA_EXPIRE_TIME;
+	m_rxQExpireTime = ZIGBEE_DATA_EXPIRE_TIME;
 }
 
 void ZigbeeGWClient::localRadioAddress(quint64 address)
@@ -109,11 +109,11 @@ void ZigbeeGWClient::appClientInit()
 
 void ZigbeeGWClient::appClientBackground()
 {
-	m_rxQPurgeTime--;
+	m_rxQExpireTime--;
 
-	if (m_rxQPurgeTime <= 0) {
+	if (m_rxQExpireTime <= 0) {
 		purgeExpiredQueueData();
-		m_rxQPurgeTime = ZIGBEE_DATA_EXPIRE_TIME;
+		m_rxQExpireTime = ZIGBEE_DATA_EXPIRE_TIME;
 	}
 
 	if (!clientIsServiceActive(m_multicastPort))

@@ -65,7 +65,7 @@ private:
 	QMap<quint64, ZigbeeDevice *> m_devices;
 	QMutex m_rxMutex;
 	QQueue<ZigbeeData> m_rxQ;
-	int m_rxQPurgeTime;
+	int m_rxQExpireTime;
 
 	QMap<quint64, int> m_badRxDevices;
 	QMap<quint64, int> m_badTxDevices;
