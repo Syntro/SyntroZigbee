@@ -30,9 +30,10 @@
 #define ZIGBEE_E2E_SERVICE        "e2eService"
 #define ZIGBEE_PROMISCUOUS_MODE   "promiscuousMode"
 
-#define ZIGBEE_PORT             "zigbeePort"
-#define ZIGBEE_SPEED            "zigbeeSpeed"
-#define NODE_DISCOVER_INTERVAL  "nodeDiscoverInterval"
+#define ZIGBEE_PORT                   "zigbeePort"
+#define ZIGBEE_SPEED                  "zigbeeSpeed"
+#define NODE_DISCOVER_INTERVAL        "nodeDiscoverInterval"
+#define MULTICAST_Q_EXPIRE_INTERVAL   "multicastQExpireInterval"
 
 
 // Device type from ND response

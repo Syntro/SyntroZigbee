@@ -84,6 +84,9 @@ QSettings *loadSettings(QStringList arglist)
 	if (!settings->contains(NODE_DISCOVER_INTERVAL))
 		settings->setValue(NODE_DISCOVER_INTERVAL, 60);
 
+	if (!settings->contains(MULTICAST_Q_EXPIRE_INTERVAL))
+		settings->setValue(MULTICAST_Q_EXPIRE_INTERVAL, 60);
+
 	if (!settings->contains(ZIGBEE_MULTICAST_SERVICE))
 		settings->setValue(ZIGBEE_MULTICAST_SERVICE, "zbmc");
 

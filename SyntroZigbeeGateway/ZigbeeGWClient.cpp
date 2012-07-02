@@ -20,22 +20,33 @@
 #include "ZigbeeGWClient.h"
 #include "ZigbeeUtils.h"
 
-#define	ZigbeeGWClient_BACKGROUND_INTERVAL (SYNTRO_CLOCKS_PER_SEC / 10)
+#define	BACKGROUND_INTERVAL (SYNTRO_CLOCKS_PER_SEC / 10)
 
 #define ZIGBEE_DATA_TYPE (SYNTRO_RECORD_TYPE_USER)
 
-#define ZIGBEE_DATA_EXPIRE_TIME (60 * SYNTRO_CLOCKS_PER_SEC)
+#define DEFAULT_EXPIRE_SECS 60
+#define MIN_EXPIRE_SECS 30
+#define MAX_EXPIRE_SECS 7200
 
 #define MAX_RX_QUEUE_SIZE 100
 
 ZigbeeGWClient::ZigbeeGWClient(QObject *parent, QSettings *settings)
-	: Endpoint(parent, settings, ZigbeeGWClient_BACKGROUND_INTERVAL)
+	: Endpoint(parent, settings, BACKGROUND_INTERVAL)
 {
 	m_multicastPort = -1;
 	m_e2ePort = -1;
 	m_promiscuousMode = false;
 	m_localZigbeeAddress = 0;
-	m_rxQExpireTime = ZIGBEE_DATA_EXPIRE_TIME;
+
+	m_rxQExpireSecs = settings->value(MULTICAST_Q_EXPIRE_INTERVAL, DEFAULT_EXPIRE_SECS).toInt(); 	
+
+	if (m_rxQExpireSecs < MIN_EXPIRE_SECS)
+		m_rxQExpireSecs = MIN_EXPIRE_SECS;
+	else if (m_rxQExpireSecs > MAX_EXPIRE_SECS)
+		m_rxQExpireSecs = MAX_EXPIRE_SECS;
+
+	// assumes SYNTRO_CLOCKS_PER_SEC == 1000
+	m_rxQExpireTicks = m_rxQExpireSecs * (SYNTRO_CLOCKS_PER_SEC / BACKGROUND_INTERVAL);
 }
 
 void ZigbeeGWClient::localRadioAddress(quint64 address)
@@ -109,11 +120,11 @@ void ZigbeeGWClient::appClientInit()
 
 void ZigbeeGWClient::appClientBackground()
 {
-	m_rxQExpireTime--;
+	m_rxQExpireTicks--;
 
-	if (m_rxQExpireTime <= 0) {
+	if (m_rxQExpireTicks <= 0) {
 		purgeExpiredQueueData();
-		m_rxQExpireTime = ZIGBEE_DATA_EXPIRE_TIME;
+		m_rxQExpireTicks = m_rxQExpireSecs * (SYNTRO_CLOCKS_PER_SEC / BACKGROUND_INTERVAL);
 	}
 
 	if (!clientIsServiceActive(m_multicastPort))
@@ -258,7 +269,7 @@ void ZigbeeGWClient::receiveData(quint64 address, QByteArray data)
 		while (m_rxQ.size() > MAX_RX_QUEUE_SIZE)
 			m_rxQ.removeFirst();
 
-		m_rxQ.enqueue(ZigbeeData(address, ZIGBEE_DATA_EXPIRE_TIME + SyntroClock(), data));
+		m_rxQ.enqueue(ZigbeeData(address, (1000 * m_rxQExpireSecs) + SyntroClock(), data));
 	}
 	else {
 		if (m_badRxDevices.contains(address)) {
