@@ -30,8 +30,10 @@
 #define ZIGBEE_E2E_SERVICE        "e2eService"
 #define ZIGBEE_PROMISCUOUS_MODE   "promiscuousMode"
 
-#define ZIGBEE_PORT         "zigbeePort"
-#define ZIGBEE_SPEED        "zigbeeSpeed"
+#define ZIGBEE_PORT             "zigbeePort"
+#define ZIGBEE_SPEED            "zigbeeSpeed"
+#define NODE_DISCOVER_INTERVAL  "nodeDiscoverInterval"
+
 
 // Device type from ND response
 // LOCAL is appended for the local radio

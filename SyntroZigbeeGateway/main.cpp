@@ -81,6 +81,9 @@ QSettings *loadSettings(QStringList arglist)
 	if (!settings->contains(ZIGBEE_SPEED))
 		settings->setValue(ZIGBEE_SPEED, 115200);
 
+	if (!settings->contains(NODE_DISCOVER_INTERVAL))
+		settings->setValue(NODE_DISCOVER_INTERVAL, 60);
+
 	if (!settings->contains(ZIGBEE_MULTICAST_SERVICE))
 		settings->setValue(ZIGBEE_MULTICAST_SERVICE, "zbmc");
 

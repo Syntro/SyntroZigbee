@@ -23,7 +23,9 @@
 #include "ZigbeeUtils.h"
 
 
-#define ZIGBEE_CONTROLLER_BACKGROUND_INTERVAL 50
+#define CONTROLLER_BACKGROUND_INTERVAL 50
+#define DEFAULT_NODE_DISCOVER_INTERVAL 60
+#define MIN_NODE_DISCOVER_INTERVAL 30
 
 ZigbeeController::ZigbeeController()
 {
@@ -35,6 +37,8 @@ ZigbeeController::ZigbeeController()
 	m_panID = 0;
 	m_nodeDiscoverWait = 0;
 	m_nodeDiscoverSequence = 0;
+	m_nextAutoNodeDiscover = 0;
+	m_autoNodeDiscoverInterval = DEFAULT_NODE_DISCOVER_INTERVAL;
 	m_port = NULL;
 	m_lastFrameID = 0;
 	memset(m_pendingFrames, 0, sizeof(m_pendingFrames));
@@ -126,6 +130,16 @@ bool ZigbeeController::openDevice(QSettings *settings)
 	memset(m_pendingFrames, 0, sizeof(m_pendingFrames));
 	m_lastFrameID = 0;
 
+	if (settings->contains(NODE_DISCOVER_INTERVAL)) {
+		m_autoNodeDiscoverInterval = settings->value(NODE_DISCOVER_INTERVAL).toUInt();
+
+		// no faster then every 30 seconds
+		if (m_autoNodeDiscoverInterval > 0 && m_autoNodeDiscoverInterval < MIN_NODE_DISCOVER_INTERVAL)
+			m_autoNodeDiscoverInterval = MIN_NODE_DISCOVER_INTERVAL;
+
+		m_nextAutoNodeDiscover = m_autoNodeDiscoverInterval * (1000 / CONTROLLER_BACKGROUND_INTERVAL);
+	}
+
 	return true;
 }
 
@@ -184,8 +198,8 @@ void ZigbeeController::requestNodeDiscover()
 
 	postATCommand(ZIGBEE_AT_CMD_ND);
 
-	// get smarter about this timing
-	m_nodeDiscoverWait = 5 * (1000 / ZIGBEE_CONTROLLER_BACKGROUND_INTERVAL);
+	// get smarter about this timing, 6 seconds is the default for the radios
+	m_nodeDiscoverWait = 8 * (1000 / CONTROLLER_BACKGROUND_INTERVAL);
 	m_nodeDiscoverSequence++;
 }
 
@@ -267,8 +281,14 @@ void ZigbeeController::run()
 			if (m_nodeDiscoverWait == 0)
 				doNodeDiscoverResponse();
 		}
+		else if (m_autoNodeDiscoverInterval > 0) {
+			m_nextAutoNodeDiscover--;
 
-		msleep(ZIGBEE_CONTROLLER_BACKGROUND_INTERVAL);
+			if (m_nextAutoNodeDiscover <= 0)
+				requestNodeDiscover();
+		}
+
+		msleep(CONTROLLER_BACKGROUND_INTERVAL);
 	}
 }
 
@@ -822,6 +842,8 @@ void ZigbeeController::doNodeDiscoverResponse()
 	}
 
 	emit nodeDiscoverResponse(list);
+
+	m_nextAutoNodeDiscover = m_autoNodeDiscoverInterval * (1000 / CONTROLLER_BACKGROUND_INTERVAL);
 }
 
 ZigbeeStats ZigbeeController::localRadio()

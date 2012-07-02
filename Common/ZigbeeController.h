@@ -94,6 +94,8 @@ private:
 	quint64 m_panID;
 	quint32 m_nodeDiscoverWait;
 	quint32 m_nodeDiscoverSequence;
+	quint32 m_nextAutoNodeDiscover;
+	quint32 m_autoNodeDiscoverInterval;
 
 	QMutex m_txMutex;
 	QQueue<QByteArray> m_txQ;
