@@ -7,8 +7,7 @@ Syntro cloud applications and devices running on Zigbee networks.
 Here is a list of the current applications in this repository and a brief
 description.
 
-Refer to the Pansenti website for more documentation: 
-(http://www.pansenti.com/Documentation)[Documentation]
+Refer to the Pansenti website for more [documentation](http://www.pansenti.com/wordpress/?page_id=58)
 
 
   SyntroZigbeeGateway
